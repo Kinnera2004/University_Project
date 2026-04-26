@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crop Disease Detection</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+
+            /* 🌿 BACKGROUND IMAGE */
+            background: url("/static/farm.jpg") no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* 🌟 Glass Container */
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            margin: 50px auto;
+            width: 650px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        input[type="file"] {
+            margin: 15px 0;
+        }
+
+        /* 🌈 Buttons */
+        button {
+            padding: 12px 20px;
+            margin: 10px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .cnn-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+        }
+
+        .resnet-btn {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        /* 📷 Image Section */
+        .result-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 25px;
+        }
+
+        img {
+            border-radius: 10px;
+            border: 3px solid #ddd;
+        }
+
+        .label {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        /* 🌱 Recommendation Box */
+        .recommendation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #eafaf1;
+            border-left: 5px solid #2ecc71;
+            border-radius: 8px;
+        }
+
+        /* 🤖 Chatbot */
+        #chat-form input, select {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        #chat-response {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>🌿 Crop Disease Detection</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="image" required><br>
+
+        <button type="submit" name="model" value="cnn" class="cnn-btn">CNN Model</button>
+        <button type="submit" name="model" value="resnet" class="resnet-btn">ResNet Model</button>
+    </form>
+
+    <div class="result-container">
+
+        {% if image %}
+        <div>
+            <h3>Uploaded</h3>
+            <img src="{{ image }}" width="220">
+        </div>
+        {% endif %}
+
+        {% if result %}
+        <div>
+            <h3>Prediction</h3>
+            <div class="label">{{ result }}</div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    {% if recommendation %}
+    <div class="recommendation">
+        <h3>🌱 Fertilizer Recommendation</h3>
+        <p>{{ recommendation }}</p>
+    </div>
+    {% endif %}
+
+    <hr>
+
+    <h3>🤖 Chatbot</h3>
+
+    <form id="chat-form">
+        <input type="text" id="message" placeholder="Ask about crops..." required>
+
+        <select id="language">
+            <option value="en">English</option>
+            <option value="ml">Malayalam</option>
+        </select>
+
+        <button type="submit">Send</button>
+    </form>
+
+    <p id="chat-response"></p>
+
+</div>
+
+<script>
+document.getElementById("chat-form").onsubmit = async function(e) {
+    e.preventDefault();
+
+    let message = document.getElementById("message").value;
+    let language = document.getElementById("language").value;
+
+    let response = await fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `message=${message}&language=${language}`
+    });
+
+    let text = await response.text();
+    document.getElementById("chat-response").innerText = text;
+};
+</script>
+
+</body>
+</html>
